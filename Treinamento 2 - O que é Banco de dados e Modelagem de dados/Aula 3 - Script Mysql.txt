@@ -1,0 +1,41 @@
+SGBD Gerenciamento de Banco de Dados:
+
+Será criando um SGBD mas nativamente no Mysql já vem alguns bancos de Dados criado.
+
+# Iremos Criar agora a primeira tabela baseada nas aulas anteriores E aqui será registrado todos os Script do Mysql
+
+
+/* COMANDOS MYSQL */
+
+
+
+/* CRIANDO O BANCO DE DADOS E COLOQUE O NOME DO BANCO QUE DESEJA E FINALIZA SEMPRE COM;*/
+
+CREATE DATABASE PROJETO;
+
+/* CONECTANDO-SE AO BANCO QUE FOI CRIADO*/
+
+USE PROJETO;
+
+/* CRIANDO A TABELA DE CLIENTES*/
+	
+/*Agora copie e cole no terminal do mysql*/
+CREATE TABLE CLIENTE(
+NOME VARCHAR(30),
+CPF  INT(11),
+EMAIL  VARCHAR(30),
+TELEFONE  VARCHAR(30),
+ENDERECO VARCHAR(100),
+SEXO CHAR(1)
+
+
+);
+
+
+/*Como Ver As Tabelas Criadas No Banco de Dados*/
+
+Show TABLES;
+
+/*Como conhecer a estrutura de uma tabela como ver os campos ou tipos */
+
+DESC cliente;

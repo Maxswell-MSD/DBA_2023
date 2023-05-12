@@ -1,0 +1,56 @@
+SGBD Gerenciamento de Banco de Dados:
+
+Será criando um SGBD mas nativamente no Mysql já vem alguns bancos de Dados criado.
+
+# Iremos Criar agora a primeira tabela baseada nas aulas anteriores E aqui será registrado todos os Script do Mysql
+
+1 - Abra o Mysql Unicode terminal;
+
+/* INICIANDO A MODELAGEM FÍSICA QUE FOI CRIADO NO MODELO LÓGICO BRMODELO USANDO O MYSQL UNICODE PROMPT */
+
+MODELAGEM FÍSICA - Tudo que é feito nas outras fazes é trasformada em Script de Banco
+
+
+Tipagem de tabelas de banco de dados
+
+ 
+entendendo a lógica tuning de recursos de otimização de processamento das query- Varchar, Int e Char
+
+Para caracteres literais árvore, joão, matemática temos o Char e Varchar;
+
+Exemplo:Colocamos a palavra João nos dois tipos em consideração que é dez bit disponivel já que é dez mas o nome joão
+ocupa menos de 10 caracteres ou menos de 10 bits por letra.
+
+
+CHAR (10) BITS DE DEZ CARACTERES - joão Consumiu 4 bytes mas usando CHAR os dados restante será preenchido com zero 
+para totalizar os 10 bits disponível. Com isso ele não é interessante ser usado por questão de otimização.
+
+Não é bom usar quando os campos forem variar muito de caracteres, usamos em coisas mais simples como UF de estado, Sexo
+ para M ou F, verdadeiro e falso de zero e um etc.. o máximo dois bytes.
+
+
+VARCHAR(10) BITS DE DEZ CARACTERES - joão Consumiu 4 bytes de 10 bits disponível Usando o recurso varchar ele vai consumir só os bytes necessário
+conforme o tamanho do nome do usuário, mesmo não atingindo o total ele não vai preencher com zeros o que restar.
+
+Para Sexo só no Mysql usamos Enum;
+
+
+Para números temos o Int e o float;
+
+Float para números reais com vírgulas e Int para números inteiros.
+
+Exemplo:
+
+FLOAT(10,2) -> dez dígitos antes da vírgula ele aceita
+INT(7,3) -> Aceita sempre número inteiro
+
+
+
+Para Fotos e documentos temos o Blob;
+
+Para os textos extenso temos o text;
+
+
+
+
+

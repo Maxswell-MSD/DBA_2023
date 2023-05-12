@@ -1,0 +1,15 @@
+Exercícios banco de Dados SQL
+
+Nome do Banco Dados
+
+
+nome da tabela Registros
+
+
+
+
+
+Nome
+telefone
+cidade
+idade
