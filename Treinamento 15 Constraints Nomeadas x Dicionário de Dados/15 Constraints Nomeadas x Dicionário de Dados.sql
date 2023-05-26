@@ -1,0 +1,451 @@
+
+# FUNÇÃO DE AGREGAÇÃO ( GROUP BY, COUNT, MAX, MIN, AVG E FUNÇÕES DO MYSQL)
+
+/*FUNÇÕES DE AGREGAÇÃO NUMÉRICAS QUE VAI ARMAZENAR TRÊS MESES DE VENDA DOS VENDEDORES*/
+
+
+CREATE DATABASE RELATORIO;
+USE RELATORIO;
+CREATE TABLE VENDEDORES(
+	IDVENDEDORES INT PRIMARY KEY AUTO_INCREMENT,
+	NOME VARCHAR(30),
+	SEXO ENUM('F','M'),
+	JANEIRO FLOAT(10,2),
+	FEVEREIRO FLOAT(10,2),
+	MARCO FLOAT(10,2)
+
+);
+
+INSERT INTO VENDEDORES VALUES
+(NULL,'Ana', 'F', 2500.00, 3200.00, 2900.00),
+(NULL,'Bruno', 'M', 1800.00, 2100.00, 2400.00),
+(NULL,'Sandra', 'F', 3500.00, 2800.00, 3100.00),
+(NULL,'Daniel', 'M', 3200.00, 3500.00, 4000.00),
+(NULL,'Elaine', 'F', 2800.00, 3000.00, 2900.00),
+(NULL,'Fernanda', 'F', 2900.00, 3300.00, 3400.00),
+(NULL,'Gustavo', 'M', 2000.00, 1900.00, 1800.00),
+(NULL,'Hugo', 'M', 3800.00, 3600.00, 3900.00),
+(NULL,'Isabela', 'F', 4000.00, 4200.00, 4100.00),
+(NULL,'João', 'M', 2500.00, 2700.00, 2800.00),
+(NULL,'Karina', 'F', 3200.00, 3100.00, 3300.00),
+(NULL,'Lucas', 'M', 2900.00, 3300.00, 3100.00);
+
+/* FUNÇÃO MAX - TRAZ O VALOR MÁXIMO DE UMA COLUNA*/
+
+-- EXEMPLO ABAIXO TRAZ O MAIOR VALOR DE FEVEREIRO. BASTA COLOCAR FUNÇÃO MAX E DENTRO O NOME DA COLUNA AS VOCÊ COLOCA A PALAVRAS QUE DESEJA SER PROJETADA PODE ESTÁ DENTRO DE ASPAS OU NÃO
+SELECT  MAX(FEVEREIRO) AS MAIOR_FEVEREIRO
+FROM VENDEDORES;
+
+
+
+/* FUNÇÃO MIN - TRAZ O MENOR VALOR DE UMA COLUNA*/
+
+SELECT MIN(FEVEREIRO) AS MENOR_FEVEREIRO
+FROM VENDEDORES;
+
+
+
+/* FUNÇÃO Avg - TRAZ A MÉDIA DO VALOR DE UMA COLUNA*/
+
+SELECT AVG(FEVEREIRO) AS MÉDIA_FEVEREIRO
+FROM VENDEDORES;
+
+
+
+/* MISTURANDO TODAS AS INFORMAÇÕES EM QUERY*/
+
+SELECT MAX(JANEIRO) AS MÁXIMO_JANEIRO,
+	   MIN(JANEIRO) AS MENOR_JANEIRO,
+	   AVG(JANEIRO) AS MÉDIA_JANEIRO
+	   FROM VENDEDORES;
+
+
+
+/* APLICANDO A FUNÇÃO TRUNCATE PARA LIMITAR A QUANTIDADE DE VALORES DECIMAIS QUE SÃO MOSTRADO NA MÉDIA TRUNCATE(AVG(JANEIRO),2)
+TRUNCATE pode ser utilizada em qualquer expressão numérica para limitar a quantidade de casas decimais exibidas no resultado. Ela pode ser aplicada em outras funções, como a função SUM e a função COUNT, por exemplo.
+ A função TRUNCATE é utilizada para limitar a quantidade de valores decimais exibidos na média das vendas. Nesse caso, o segundo parâmetro da função indica que a média deve ser exibida com apenas duas casas decimais.
+*/
+SELECT MAX(JANEIRO) AS MÁXIMO_JANEIRO,
+	   MIN(JANEIRO) AS MENOR_JANEIRO,
+	   TRUNCATE(AVG(JANEIRO),2) AS MÉDIA_JANEIRO
+	   FROM VENDEDORES;
+
+
+
+
+/*SEGUNDA PARTE DA FUNÇÃO - AGREGANDO COM SUM() PARA REALIZAR AS SOMAS*/
+
+SELECT SUM(JANEIRO) AS TOTAL_JANEIRO
+FROM VENDEDORES;
+
+
+
+/* Essa consulta cria uma VIEW chamada V_DADOS que exibe o total de vendas realizadas pelos vendedores em Janeiro, Fevereiro e Março.
+ A função SUM é utilizada para somar as vendas de cada mês, agrupando todas as vendas em um único registro. Essa VIEW pode ser utilizada para gerar relatórios completos e consolidados das vendas,
+  permitindo uma análise mais eficiente dos dados. */
+
+CREATE VIEW V_DADOS AS
+SELECT SUM(JANEIRO) AS TOTAL_JANEIRO,
+	   SUM(FEVEREIRO) AS TOTAL_FEVEREIRO,
+	   SUM(MARCO) AS TOTAL_MARÇO
+FROM VENDEDORES;
+
+
+ SELECT * FROM V_DADOS;
+
+ /*Esse código SQL retorna a soma total das vendas realizadas por vendedores em março, agrupados por sexo quando é usado função GROUP BY.*/
+
+
+ SELECT SEXO, SUM(MARCO) AS TOTAL_MARÇO
+ FROM VENDEDORES 
+ GROUP BY SEXO;	
+
+
+
+/* 14 - Subqueries são usadas para filtrar dados com precisão, permitindo que uma consulta seja executada dentro de outra.
+No exemplo apresentado, a subconsulta interna (INNERQUERY) é resolvida primeiro e retorna o menor valor da coluna "MARCO" da tabela "VENDEDORES".
+Isso permite que a consulta externa utilize esse valor de maneira eficiente para obter os resultados desejados. O treinamento em subqueries é fundamental para aprimorar as habilidades 
+em SQL e criar consultas mais precisas e eficientes. */
+
+ ----------------------------- PEQUENO EXERCÍDIO QUE TRABALHA EM COLUNAS -----------------------------------------------
+
+ /* VENDEDOR QUE VENDEU QUE TEVE A MENOR VENDA EM MARCO E O SEU NOME*/
+SELECT NOME, MARCO FROM VENDEDORES
+WHERE MARCO = (SELECT MIN(MARCO) FROM VENDEDORES);
+
+
+ /* VENDEDOR QUE TEVE A MELHOR VENDA EM JANEIRO E O SEU NOME*/
+
+ SELECT NOME,JANEIRO FROM VENDEDORES
+ WHERE JANEIRO = (SELECT MAX(JANEIRO) FROM VENDEDORES);
+
+
+-- VOCÊ PODE TIRAR SUA DÚVIDA COM ORGANIZAÇÃO ORDER BY
+ SELECT * FROM VENDEDORES ORDER BY JANEIRO DESC;
+
+  SELECT * FROM VENDEDORES ORDER BY MARCO;
+
+  /*QUEM VENDEU MAIS QUE O VALOR MEDIO DE MARCO É SÓ TROCAR = PELO SINAL DE MAIOR >*/
+
+  SELECT NOME,MARCO FROM VENDEDORES
+  WHERE MARCO >  (SELECT AVG(MARCO) FROM VENDEDORES);
+
+  /*QUEM VENDEU MAIS QUE O VALOR MEDIO DE MARCO É SÓ TROCAR = PELO SINAL DE MAIOR <*/
+
+   SELECT NOME,MARCO FROM VENDEDORES
+  WHERE MARCO < (SELECT AVG(MARCO) FROM VENDEDORES);
+  
+
+   ---------------------OPERAÇÕES EM LINHAS QUE NÃO EXISTE FUNÇÃO SÓ COM OPERAÇÕES ARITIMÉTICAS-----------------------------------------------
+
+   SELECT NOME,JANEIRO,FEVEREIRO,MARCO,
+   (JANEIRO+FEVEREIRO+MARCO) AS "TOTAL",
+   (JANEIRO+FEVEREIRO+MARCO) *.25 AS "DESCONTO",
+   TRUNCATE((JANEIRO+FEVEREIRO+MARCO)/3,2) AS "MÉDIA"
+   FROM VENDEDORES;
+
+
+
+
+
+
+-- 14 - ALTERANDO UMA ESTRUTURA DA TABELA, PRIMARY KEY, FOREIGN KEY, OBJSETOS E CHARSET
+
+DROP TABLE TABELA;
+
+CREATE TABLE TABELA(
+
+COLUNA1 VARCHAR(30),
+COLUNA2 VARCHAR(30),
+COLUNA3 VARCHAR(30)
+
+);
+
+-- ADICIONANDO UMA CHAVE PRIMÁRIA POR FORA DA TABELA QUE É O MAIS INDICADO PK
+-- QUANDO É COLOCADO A PRIMARY KEY POR FORA NÃO TEM COMO USAR O AUTO_INCREMENT
+
+ALTER TABLE TABELA
+ADD PRIMARY KEY (COLUNA1);
+
+-- ADICIONANDO UMA COLUNA SEM POSIÇÃO, POR PADRÃO ELA SEMPRE SERÁ A ÚLTIMA COLUNA
+
+ALTER TABLE TABELA
+ADD COLUNA4 VARCHAR(30);
+
+-- ADICIONANDO UMA COLUNA POR POSIÇÃO
+ALTER TABLE TABELA
+ADD COLUMN COLUNA5 VARCHAR(30) NOT NULL UNIQUE AFTER COLUNA3;
+
+
+
+-- MODIFICANDO A POSIÇÃO DE UMA COLUNA
+ALTER TABLE TABELA
+MODIFY COLUMN COLUNA4 VARCHAR(30) AFTER COLUNA3;
+
+-- MODIFICANDO O TIPO DE UMA COLUNA, LEMBRANDO SE TIVER VALOR NA COLUNA DE CHAR DA PARA MUDAR PARA VARCHAR, NÃO 
+-- É POSSÍVEL MODIFICAR O TIPO QUE TENHA NOMES COMO CHAR OU VARCHAR NÃO TEM COMO MODIFICAR PARA INT PORQUE OS DADOS
+-- NÃO TEM NÚMERO, SE A COLUNA CHAR E VARCHAR TIVER NÚMEROS PODE MODIFICAR PARA INT OU COLUNA VAZIA
+
+ALTER TABLE TABELA MODIFY COLUNA2 DATE NOT NULL;
+
+
+-- RENOMEANDO O NOME DA TABELA
+
+ALTER TABLE TABELA
+RENAME PESSOA;
+
+--////////////////////////////////// 2 PARTE /////////////////////////////////////////////////////
+
+
+
+
+
+-- REALIZANDO ALTERAÇÕES DE CHAVE ESTRANGEIRA FOREIGN KEY  POR FORA DA TABELA PARA ATRIBUIR NOMES A CONSTRAINT
+-- É UMA BOA PRÁTICA CRIAR DEPOIS DA TABELA AS CHAVES POR QUESTÃO DE DICIONÁRIO DE DADOS
+
+CREATE TABLE TIME(
+	IDTIME INT PRIMARY KEY AUTO_INCREMENT,
+	TIME VARCHAR(50),
+	ID_PESSOA VARCHAR(30)
+
+);
+
+-- FOREIGN KEY
+
+ALTER TABLE TIME
+ADD FOREIGN KEY (ID_PESSOA) REFERENCES PESSOA (COLUNA1);
+
+-- VERIFICANDO AS CHAVES CRIADA NA TABELA
+
+SHOW CREATE TABLE TIME;
+
+SHOW DATABASES;
+-- EXEMPLO DOS DICIONÁRIOS DE DADOS PARA VER OUTROS ELEMENTOS DO BANCO E ACHAR AS CHAVES
++--------------------+
+| Database           |
++--------------------+
+| comercio           |
+| information_schema |-- DICIONÁRIO DE DADOS
+| innobayte          |
+| mysql              |-- DICIONÁRIO DE DADOS
+| performance_schema |-- DICIONÁRIO DE DADOS
+| relatorio          |
+| sakila             |
+| sys                |
+| world              |
+
+
+
+
+
+
+
+
+
+
+
+
++--------------------
+--/////////////////    AULA 15 CONSTRAINTS E DICIONÁRIO DE DADOS    //////////////////////////////////
+
+# CRIANDO UM NOVO BANCO DE DADOS PARA ESTUDAR
+
+DROP  DATABASE COMERCIO_1;
+
+
+
+CREATE TABLE JOGADOR(
+	IDJOGADOR INT PRIMARY KEY AUTO_INCREMENT,
+	NOME VARCHAR(30)
+
+);
+
+
+CREATE TABLE TIMES(
+	IDTIMES INT PRIMARY KEY AUTO_INCREMENT,
+	NOMETIME VARCHAR(30),
+	ID_JOGADOR INT,
+	FOREIGN KEY (ID_JOGADOR)
+	REFERENCES JOGADOR (IDJOGADOR)
+
+);
+
+INSERT INTO JOGADOR VALUES(NULL,'Juninho');
+INSERT INTO TIMES VALUES(NULL,'Vasco da Gama',1);
+
+
+/*ANALISE MAIS DADOS PARA ANALISAR AS CONSTRAINT QUE GERA NOME ALEATÓRIO E ISSO NÃO É INDICADO
+A MELHOR PRÁTICA É CRIAR A TABELA PRIMEIRO E POR FORA USAR DDL ALTER TABLE PARA CRIAR AS CHAVES POR FORA
+ASSIM VOCÊ PODE ATRIBUIR O NOME PARA AJUDAR NAS BUSCAS NO DICIONÁRIO DE DADOS*/
+SHOW CREATE TABLE JOGADOR;
+SHOW CREATE TABLE TIMES;
+
+
+SHOW DATABASES;
+-- EXEMPLO DOS DICIONÁRIOS DE DADOS PARA VER OUTROS ELEMENTOS DO BANCO E ACHAR AS CHAVES
++--------------------+
+| Database           |
++--------------------+
+| comercio           |
+| information_schema |-- DICIONÁRIO DE DADOS
+| innobayte          |
+| mysql              |-- DICIONÁRIO DE DADOS
+| performance_schema |-- DICIONÁRIO DE DADOS
+| relatorio          |
+| sakila             |
+| sys                |
+| world              |
++--------------------
+
+
+
+/*ORGANIZAÇÃO DE CHAVES CONSTRAINTS É UMA REGRA DE CHAVE REFERENCIAL PK E FK VAI GARANTIR QUE NÃO TENHA UM REGISTRO EM UMA TABELA SEM REFERENCIA EM OUTRA*/
+
+
+
+/*15 - TREINAMENTO DE CONSTRAINTS ORGANIZANDO PK E FK POR FORA DA TABELA*/
+
+# MANTENHA A ORGANIZAÇÃO NA ORTEM 1 - TABELAS 2- CHAVES CONSTRAINTS SEPARADO
+
+
+
+
+
+
+
+CREATE DATABASE COMERCIO_1;
+USE COMERCIO_1;
+
+
+CREATE TABLE CLIENTE(
+	IDCLIENTE INT,
+	NOME VARCHAR(30) NOT NULL
+
+);
+
+CREATE TABLE TELEFONE(
+	IDTELEFONE INT,
+	TIPO CHAR(3) NOT NULL,
+	NUMERO VARCHAR(10) NOT NULL,
+	ID_TELEFONE INT
+
+);
+
+
+
+/*CRIANDO AS CONSTRAINT PARA PK*/
+
+ALTER TABLE CLIENTE
+ADD CONSTRAINT PK_CLIENTE
+PRIMARY KEY(IDCLIENTE);
+
+/* CRIANDO A CONSTRAINT PARA FK*/
+
+ALTER TABLE TELEFONE
+ADD CONSTRAINT PK_CLIENTE_FK_TELEFONE
+FOREIGN KEY (ID_TELEFONE)
+REFERENCES CLIENTE (IDCLIENTE);
+
+
+SHOW CREATE TABLE TELEFONE;
+
+
+/* SE CRIOU AS CHAVES USANDO UMA CONSTRAINT PODE APAGAR ELA E CRIAR QUANTAS VEZES DESEJAR BASTA SABER O NOME DA REGRA*/
+
+/*SE USOU O DICIONÁRIO DE DADOS PARA ACHAR O NOME E NÃO CONSEGUIU APAGAR, USE O BANCO DA TABELA REFERENTE*/
+
+ALTER TABLE TELEFONE
+DROP FOREIGN KEY PK_CLIENTE_FK_TELEFONE;
+
+
+
+/*15 SEGUNDA PARTE DICIONÁRIO DE DADOS QUE GUARDA OS META-DADOS QUALQUER OBJETO SE ACHA NO DICIONÁRIO DE DADOS*/
+
+SHOW DATABASES;
+
++--------------------+
+| Database           |
++--------------------+
+| comercio           |
+| information_schema |-- DICIONÁRIO DE DADOS
+| innobayte          |
+| mysql              |-- DICIONÁRIO DE DADOS
+| performance_schema |-- DICIONÁRIO DE DADOS
+| relatorio          |
+| sakila             |
+| sys                |
+| world              |
++--------------------
+
+/* PROCURANDO UMA CONSTRAINT NO DICIOÁRIO DE DADOS*/
+
+/*CONECTANDO NAS INFORMAÇÕES*/
+USE INFORMATION_SCHEMA;
+
+/*VERIFIQUE EM QUAL DATABASE ESTÁ CONECTADO*/
+STATUS
+
+
+Connection id:          10
+Current database:       information_schema  -- DEPOIS DE APLICAR O COMANDO ESTÁ CONECTADO NO SHEMA
+Current user:           root@localhost
+SSL:                    Cipher in use is TLS_AES_256_GCM_SHA384
+Using delimiter:        ;
+Server version:         8.0.33 MySQL Community Server - GPL
+Protocol version:       10
+Connection:             localhost via TCP/IP
+Server characterset:    utf8mb4
+Db     characterset:    utf8mb3
+Client characterset:    utf8mb4
+Conn.  characterset:    utf8mb4
+TCP port:               3306
+Binary data as:         Hexadecimal
+Uptime:                 1 day 1 hour 45 min 19 sec
+
+/* AGORA ANALISE QUAIS TABALEAS EXISTE NESSE BANCO E ENCONTRE TABLE_CONSTRAINTS */
+
+SHOW TABLES;
+
+/*AGORA VERIFIQUE OS DADOS DESSA TABELA */
+
+ DESC TABLE_CONSTRAINTS;
++--------------------+-------------+------+-----+---------+-------+
+| Field              | Type        | Null | Key | Default | Extra |
++--------------------+-------------+------+-----+---------+-------+
+| CONSTRAINT_CATALOG | varchar(64) | YES  |     | NULL    |       |
+| CONSTRAINT_SCHEMA  | varchar(64) | YES  |     | NULL    |       |-- ANALISE ESSA COLUNA
+| CONSTRAINT_NAME    | varchar(64) | YES  |     | NULL    |       |-- MOSTRA O NOME DA CONSTRAINT QUE FOI DADA NA CRIAÇÃO DAS CHAVES POR FORA DAS TABALAS 
+| TABLE_SCHEMA       | varchar(64) | YES  |     | NULL    |       |
+| TABLE_NAME         | varchar(64) | YES  |     | NULL    |       |-- ANALISE O NOME
+| CONSTRAINT_TYPE    | varchar(11) | NO   |     |         |       |-- ANALISE O TIPO DESSA CONSTRAINT
+| ENFORCED           | varchar(3)  | NO   |     |         |       |
++--------------------+-------------+------+-----+---------+-------+
+
+SELECT CONSTRAINT_SCHEMA AS "BANCO",
+	   TABLE_NAME AS "TABELA",
+	   CONSTRAINT_NAME AS "REGRA",
+	   CONSTRAINT_TYPE AS "TIPO"
+FROM TABLE_CONSTRAINTS;
+
+/*SE PESQUISAR BEM AGORA VAI IDENTIFICAR COM DETALHE QUAL TABELA É PK E FK
+COMO EXISTE MUITAS INFORMAÇÕES VOCÊ PODE FILTRAR O BANCO QUE DESEJA TER DETALHES EXEMPLO:
+*/
+SELECT CONSTRAINT_SCHEMA AS "BANCO",
+	   TABLE_NAME AS "TABELA",
+	   CONSTRAINT_NAME AS "REGRA",
+	   CONSTRAINT_TYPE AS "TIPO"
+FROM TABLE_CONSTRAINTS
+WHERE CONSTRAINT_SCHEMA = 'COMERCIO_1';
+
+/* COM ISSO O DICIONÁRIO DARÁ OS DETALHES DE QUEM É A CHAVE PRIÁRIA E ESTRANGÉRIA QUANDO PROCURAR
+PELO DICIONÁRIO DE DADOS
+*/
+
++------------+----------+------------------------+-------------+
+| BANCO      | TABELA   | REGRA                  | TIPO        |
++------------+----------+------------------------+-------------+
+| comercio_1 | cliente  | PRIMARY                | PRIMARY KEY |
+| comercio_1 | telefone | PK_CLIENTE_FK_TELEFONE | FOREIGN KEY |
++------------+----------+------------------------+-------------+
+
+
